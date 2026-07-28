@@ -285,7 +285,7 @@ export default function Home() {
     setResultsError("");
     setResultsWarning("");
     try {
-      const response = await fetch("/api/jingcai/yesterday", { cache: "no-store" });
+      const response = await fetch("/api/history/results", { cache: "no-store" });
       const data = await response.json() as { matches?: JingcaiResult[]; date?: string; checkedAt?: string; source?: string; warning?: string; error?: string };
       if (!response.ok) throw new Error(data.error || `官方赛果接口返回 ${response.status}`);
       setYesterdayResults(data.matches || []);
