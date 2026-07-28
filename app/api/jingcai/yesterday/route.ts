@@ -138,6 +138,20 @@ export async function GET(request: Request) {
       }
     }
     if (!uniqueMatches.length) {
+      // EdgeOne has no D1 binding; use the scheduled Cloudflare Worker as the shared history backend.
+      try {
+        const origin = `https://pitch-intelligence.gongp1346.workers.dev/api/jingcai/yesterday?date=${date}`;
+        const originResponse = await fetch(origin, { signal: AbortSignal.timeout(20000), headers: { Accept: "application/json" } });
+        if (originResponse.ok) {
+          const originPayload = asRecord(await originResponse.json());
+          const originMatches = asArray(originPayload.matches);
+          if (originMatches.length) {
+            return NextResponse.json({ ...originPayload, source: `${String(originPayload.source || "Cloudflare Worker")}（EdgeOne 回源）` }, { headers: { "Cache-Control": "public, max-age=60, s-maxage=300" } });
+          }
+        }
+      } catch {
+        // Continue to local/external fallbacks when the origin is unavailable.
+      }
       const imported = await getImportedResultsByDate(date).catch(() => []);
       if (imported.length) { uniqueMatches = imported; source = "历史库兜底"; sourceUrl = ""; }
     }

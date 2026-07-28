@@ -290,6 +290,7 @@ ${goalModelText}
           temperature: 0.25,
           max_tokens: 2400,
         }),
+        signal: AbortSignal.timeout(25000),
       },
     );
 
