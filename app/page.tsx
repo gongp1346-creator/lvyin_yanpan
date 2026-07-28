@@ -338,7 +338,7 @@ export default function Home() {
     }
     setIsLoading(true);
     try {
-      const response = await fetch("/api/analyze", {
+      const response = await fetch("/api/analyze", { signal: AbortSignal.timeout(30000),
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(input),

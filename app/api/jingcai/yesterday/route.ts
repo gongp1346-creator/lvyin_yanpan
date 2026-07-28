@@ -93,6 +93,19 @@ async function fetchBackupResults(date: string) {
 export async function GET(request: Request) {
   const requestedDate = new URL(request.url).searchParams.get("date") || "";
   const date = /^\d{4}-\d{2}-\d{2}$/.test(requestedDate) ? requestedDate : dateInShanghai(-1);
+  // Read the shared D1 history first; this avoids waiting on blocked external sources.
+  try {
+    const historyOrigin = `https://pitch-intelligence.gongp1346.workers.dev/api/history/results?date=${date}`;
+    const historyResponse = await fetch(historyOrigin, { signal: AbortSignal.timeout(10000), headers: { Accept: "application/json" } });
+    if (historyResponse.ok) {
+      const historyPayload = asRecord(await historyResponse.json());
+      if (asArray(historyPayload.matches).length) {
+        return NextResponse.json({ ...historyPayload, source: "Cloudflare D1 历史库（EdgeOne 回源）" }, { headers: { "Cache-Control": "public, max-age=60, s-maxage=300" } });
+      }
+    }
+  } catch {
+    // Fall through to external sources if the shared origin is unavailable.
+  }
   try {
     const first = await fetchPage(date, 1);
     const value = asRecord(first.value);
