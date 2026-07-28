@@ -1,0 +1,42 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "pitch-intelligence",
+  "main": "dist/server/worker-entry.mjs",
+  "compatibility_date": "2026-05-15",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "no_bundle": false,
+  "vars": {
+    "DEEPSEEK_MODEL": "deepseek-chat"
+  },
+  "assets": {
+    "directory": "dist/client",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pitch-intelligence-db",
+      "database_id": "78f540da-2a85-45bb-a94f-f11c93a4c944",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "triggers": {
+    "crons": [
+      "*/30 * * * *"
+    ]
+  },
+  "rules": [
+    {
+      "type": "ESModule",
+      "globs": [
+        "dist/server/**/*.js",
+        "dist/server/**/*.mjs"
+      ]
+    }
+  ]
+}
