@@ -140,6 +140,15 @@ export async function GET(request: Request) {
     if (!uniqueMatches.length) {
       // EdgeOne has no D1 binding; use the scheduled Cloudflare Worker as the shared history backend.
       try {
+        const historyOrigin = `https://pitch-intelligence.gongp1346.workers.dev/api/history/results?date=${date}`;
+        const historyResponse = await fetch(historyOrigin, { signal: AbortSignal.timeout(10000), headers: { Accept: "application/json" } });
+        if (historyResponse.ok) {
+          const historyPayload = asRecord(await historyResponse.json());
+          const historyMatches = asArray(historyPayload.matches);
+          if (historyMatches.length) {
+            return NextResponse.json({ ...historyPayload, source: "Cloudflare D1 历史库（EdgeOne 回源）" }, { headers: { "Cache-Control": "public, max-age=60, s-maxage=300" } });
+          }
+        }
         const origin = `https://pitch-intelligence.gongp1346.workers.dev/api/jingcai/yesterday?date=${date}`;
         const originResponse = await fetch(origin, { signal: AbortSignal.timeout(20000), headers: { Accept: "application/json" } });
         if (originResponse.ok) {
