@@ -89,7 +89,7 @@ async function fetchJinaMatches(date: string): Promise<FiveHundredJingcaiMatch[]
       odds: null,
       markets: emptyMarkets(""),
     };
-  }).filter((match): match is FiveHundredJingcaiMatch => Boolean(match));
+  }).filter((match) => match !== null) as FiveHundredJingcaiMatch[];
 }
 
 function emptyMarkets(line: string): JingcaiMarkets {
@@ -141,7 +141,7 @@ export async function getFiveHundredJingcaiMatches(date: string, includeMarkets 
         halfFull,
       },
     };
-  }).filter((match): match is FiveHundredJingcaiMatch => Boolean(match));
+  }).filter((match) => match !== null) as FiveHundredJingcaiMatch[];
 
   return [...new Map(matches.map((match) => [match.id, match])).values()];
 }

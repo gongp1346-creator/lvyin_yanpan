@@ -89,6 +89,8 @@ type JingcaiResult = {
   fullTimeScore: string;
   result: string;
   status: string;
+  goals?: Array<{ minute: string; player: string; team: string }>;
+  cards?: Array<{ minute: string; player: string; team: string; type: string }>;
 };
 
 function parseOfficialSchedule(payload: unknown): JingcaiMatch[] {
