@@ -195,7 +195,17 @@ export async function POST(request: Request) {
     awayTeam,
     competition,
     kickoff,
-  });
+  }).catch(() => ({
+    status: "unavailable" as const,
+    provider: "API-Football",
+    checkedAt: new Date().toISOString(),
+    seasons: [],
+    facts: [],
+    missing: ["API-Football 数据源请求失败或超时"],
+    sources: [],
+    requestCount: 0,
+    plan: "当前使用历史模型和已有证据继续分析",
+  }));
   const historicalEstimate = await getHistoricalModelEstimate({
     homeTeam,
     awayTeam,
