@@ -117,6 +117,7 @@ export async function collectFootballEvidence(
       requestCount += 1;
       const response = await fetch(url, {
         headers: { "x-apisports-key": apiKey },
+        signal: AbortSignal.timeout(8000),
         cf: { cacheTtl: CACHE_TTL_MS / 1000, cacheEverything: true },
       } as RequestInit);
       if (!response.ok) {
